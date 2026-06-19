@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler(FolderNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerFolderNotFound(FolderNotFoundException ex) {
+    @ExceptionHandler({ FolderNotFoundException.class, DocumentNotFoundException.class })
+    public ResponseEntity<ErrorResponse> handlerNotFound(RuntimeException ex) {
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
