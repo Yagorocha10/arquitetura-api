@@ -40,5 +40,14 @@ public class FolderController {
         folderService.excluir(id);
     }
 
+    @PostMapping("{id}/subfolders")
+    public FolderResponseDTO criarSubpasta(@PathVariable Long id,
+                                           @RequestBody @Valid FolderRequestDTO folderRequestDTO) {
+
+        return folderService.criarSubpasta(id, folderRequestDTO);
+
+
+    }
+
 
 }

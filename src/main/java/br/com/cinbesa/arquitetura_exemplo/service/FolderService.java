@@ -72,6 +72,29 @@ public class FolderService {
         folderRepository.deleteById(id);
     }
 
+    public FolderResponseDTO criarSubpasta(Long parentId, FolderRequestDTO folderRequestDTO) {
+
+        Folder parentFolder = folderRepository.findById(parentId)
+                .orElseThrow(() -> new FolderNotFoundException(parentId));
+
+
+        Folder subFolder = Folder.builder()
+                .nome(folderRequestDTO.nome())
+                .dataCriacao(LocalDateTime.now())
+                .parentFolder(parentFolder)
+                .build();
+
+        subFolder = folderRepository.save(subFolder);
+
+        return new FolderResponseDTO(
+                subFolder.getId(),
+                subFolder.getNome(),
+                subFolder.getDataCriacao()
+        );
+
+
+    }
+
 
 
 
