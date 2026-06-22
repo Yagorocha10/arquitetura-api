@@ -5,9 +5,11 @@ import br.com.cinbesa.arquitetura_exemplo.dto.FolderRequestDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.FolderResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.entity.Folder;
 import br.com.cinbesa.arquitetura_exemplo.exception.FolderNotFoundException;
+import br.com.cinbesa.arquitetura_exemplo.repository.DocumentRepository;
 import br.com.cinbesa.arquitetura_exemplo.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class FolderService {
 
     private final FolderRepository folderRepository;
+    private final DocumentRepository documentRepository;
 
     public FolderResponseDTO criar(FolderRequestDTO folderRequestDTO) {
 
@@ -63,12 +66,14 @@ public class FolderService {
 
     }
 
+    @Transactional
     public void excluir(Long id) {
 
         if(!folderRepository.existsById(id)) {
             throw new FolderNotFoundException(id);
         }
 
+        documentRepository.deleteByFolderId(id);
         folderRepository.deleteById(id);
     }
 
