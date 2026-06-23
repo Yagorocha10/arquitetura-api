@@ -1,6 +1,5 @@
 package br.com.cinbesa.arquitetura_exemplo.service;
 
-
 import br.com.cinbesa.arquitetura_exemplo.dto.FolderRequestDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.FolderResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.entity.Folder;
@@ -22,86 +21,88 @@ public class FolderService {
     private final DocumentRepository documentRepository;
 
     public FolderResponseDTO criar(FolderRequestDTO folderRequestDTO) {
+        Folder parent = null;
 
-        Folder folder = Folder.builder()
-                .nome(folderRequestDTO.nome())
-                .dataCriacao(LocalDateTime.now())
-                .build();
+        if (folderRequestDTO.parentId() != null) {
+            parent = buscarEntidade(folderRequestDTO.parentId());
+        }
 
-        folder = folderRepository.save(folder);
+        Folder folder = criarEntidade(folderRequestDTO.nome(), parent);
 
-        return new FolderResponseDTO(
-                folder.getId(),
-                folder.getNome(),
-                folder.getDataCriacao()
-        );
-
-
+        return toResponse(folder);
     }
 
-    public List<FolderResponseDTO> listar() {
+    public FolderResponseDTO criarSubpasta(Long parentId, FolderRequestDTO folderRequestDTO) {
+        Folder parent = buscarEntidade(parentId);
+        Folder folder = criarEntidade(folderRequestDTO.nome(), parent);
 
-        return folderRepository.findAll()
-                .stream()
-                .map(folder -> new FolderResponseDTO(
-                        folder.getId(),
-                        folder.getNome(),
-                        folder.getDataCriacao()
-
-                )).toList();
-
+        return toResponse(folder);
     }
 
+    public List<FolderResponseDTO> listar(Long parentId) {
+        List<Folder> folders = parentId == null
+                ? folderRepository.findByParentIsNull()
+                : folderRepository.findByParentId(parentId);
+
+        return folders.stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
     public FolderResponseDTO buscaPorId(Long id) {
+        return toResponse(buscarEntidade(id));
+    }
 
-        Folder  folder = folderRepository.findById(id)
-                .orElseThrow(() -> new FolderNotFoundException(id));
+    @Transactional
+    public FolderResponseDTO atualizar(Long id, FolderRequestDTO folderRequestDTO) {
+        Folder folder = buscarEntidade(id);
+        folder.setNome(folderRequestDTO.nome());
 
-        return new FolderResponseDTO(
-                folder.getId(),
-                folder.getNome(),
-                folder.getDataCriacao()
-        );
-
+        return toResponse(folder);
     }
 
     @Transactional
     public void excluir(Long id) {
-
-        if(!folderRepository.existsById(id)) {
-            throw new FolderNotFoundException(id);
-        }
-
-        documentRepository.deleteByFolderId(id);
-        folderRepository.deleteById(id);
+        Folder folder = buscarEntidade(id);
+        excluirRecursivamente(folder);
     }
 
-    public FolderResponseDTO criarSubpasta(Long parentId, FolderRequestDTO folderRequestDTO) {
-
-        Folder parentFolder = folderRepository.findById(parentId)
-                .orElseThrow(() -> new FolderNotFoundException(parentId));
-
-
-        Folder subFolder = Folder.builder()
-                .nome(folderRequestDTO.nome())
+    private Folder criarEntidade(String nome, Folder parent) {
+        Folder folder = Folder.builder()
+                .nome(nome)
                 .dataCriacao(LocalDateTime.now())
-                .parentFolder(parentFolder)
+                .parent(parent)
                 .build();
 
-        subFolder = folderRepository.save(subFolder);
-
-        return new FolderResponseDTO(
-                subFolder.getId(),
-                subFolder.getNome(),
-                subFolder.getDataCriacao()
-        );
-
-
+        return folderRepository.save(folder);
     }
 
+    private Folder buscarEntidade(Long id) {
+        return folderRepository.findById(id)
+                .orElseThrow(() -> new FolderNotFoundException(id));
+    }
 
+    private void excluirRecursivamente(Folder folder) {
+        folderRepository.findByParentId(folder.getId())
+                .forEach(this::excluirRecursivamente);
 
+        documentRepository.deleteByFolderId(folder.getId());
+        folderRepository.delete(folder);
+    }
 
+    private FolderResponseDTO toResponse(Folder folder) {
+        Long parentId = folder.getParent() == null ? null : folder.getParent().getId();
+        List<FolderResponseDTO> children = folderRepository.findByParentId(folder.getId())
+                .stream()
+                .map(this::toResponse)
+                .toList();
 
+        return new FolderResponseDTO(
+                folder.getId(),
+                folder.getNome(),
+                folder.getDataCriacao(),
+                parentId,
+                children
+        );
+    }
 }
