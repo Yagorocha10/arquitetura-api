@@ -2,6 +2,7 @@ package br.com.cinbesa.arquitetura_exemplo.service;
 
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentContentDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentResponseDTO;
+import br.com.cinbesa.arquitetura_exemplo.dto.StorageResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.entity.Folder;
 import br.com.cinbesa.arquitetura_exemplo.entity.StoredDocument;
 import br.com.cinbesa.arquitetura_exemplo.exception.DocumentNotFoundException;
@@ -91,11 +92,47 @@ public class DocumentService {
         );
     }
 
+    private String formatarEspaco(Long bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+
+        double kb = bytes / 1024.0;
+
+        if (kb < 1024) {
+            return String.format("%.2f KB", kb);
+        }
+
+        double mb = kb / 1024.0;
+
+        if (mb < 1024) {
+            return String.format("%.2f MB", mb);
+        }
+
+        double gb = mb / 1024.0;
+
+        return String.format("%.2f GB", gb);
+
+    }
+
     private String resolveType(String filename) {
         if (filename == null || !filename.contains(".")) {
             return "UNKNOWN";
         }
 
         return filename.substring(filename.lastIndexOf('.') + 1).toUpperCase();
+    }
+
+    public StorageResponseDTO consultarArmazenamento() {
+        Long totalBytes = documentRepository.calcularEspacoUtilizado();
+
+        Long quantidadeArquivos = documentRepository.quantidadeArquivos();
+
+
+        return new StorageResponseDTO(
+                totalBytes,
+                formatarEspaco(totalBytes),
+                quantidadeArquivos
+        );
     }
 }

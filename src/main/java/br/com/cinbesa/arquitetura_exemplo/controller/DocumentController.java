@@ -2,6 +2,7 @@ package br.com.cinbesa.arquitetura_exemplo.controller;
 
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentContentDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentResponseDTO;
+import br.com.cinbesa.arquitetura_exemplo.dto.StorageResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -70,5 +71,11 @@ public class DocumentController {
     @DeleteMapping("/documents/{id}")
     public void excluir(@PathVariable Long id) {
         documentService.excluir(id);
+    }
+
+    @GetMapping("/documents/storage")
+    public StorageResponseDTO consultarArmazenamento() {
+
+        return documentService.consultarArmazenamento();
     }
 }
