@@ -2,6 +2,7 @@ package br.com.cinbesa.arquitetura_exemplo.service;
 
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentContentDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentResponseDTO;
+import br.com.cinbesa.arquitetura_exemplo.dto.StorageResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.entity.Folder;
 import br.com.cinbesa.arquitetura_exemplo.entity.StoredDocument;
 import br.com.cinbesa.arquitetura_exemplo.exception.DocumentNotFoundException;
@@ -47,6 +48,13 @@ public class DocumentService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public StorageResponseDTO storageInfo() {
+        return new StorageResponseDTO(
+                documentRepository.count(),
+                documentRepository.sumTotalSizeBytes()
+        );
     }
 
     public List<DocumentResponseDTO> listarPorPasta(Long folderId) {

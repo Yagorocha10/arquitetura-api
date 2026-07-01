@@ -2,6 +2,7 @@ package br.com.cinbesa.arquitetura_exemplo.controller;
 
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentContentDTO;
 import br.com.cinbesa.arquitetura_exemplo.dto.DocumentResponseDTO;
+import br.com.cinbesa.arquitetura_exemplo.dto.StorageResponseDTO;
 import br.com.cinbesa.arquitetura_exemplo.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -29,6 +30,11 @@ public class DocumentController {
     @GetMapping("/documents")
     public List<DocumentResponseDTO> listarTodos() {
         return documentService.listarTodos();
+    }
+
+    @GetMapping("/documents/storage")
+    public StorageResponseDTO storageInfo() {
+        return documentService.storageInfo();
     }
 
     @GetMapping("/folders/{folderId}/documents")
