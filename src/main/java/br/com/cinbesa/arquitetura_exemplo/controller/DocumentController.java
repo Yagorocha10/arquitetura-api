@@ -32,11 +32,6 @@ public class DocumentController {
         return documentService.listarTodos();
     }
 
-    @GetMapping("/documents/storage")
-    public StorageResponseDTO storageInfo() {
-        return documentService.storageInfo();
-    }
-
     @GetMapping("/folders/{folderId}/documents")
     public List<DocumentResponseDTO> listarPorPasta(@PathVariable Long folderId) {
         return documentService.listarPorPasta(folderId);
@@ -76,5 +71,11 @@ public class DocumentController {
     @DeleteMapping("/documents/{id}")
     public void excluir(@PathVariable Long id) {
         documentService.excluir(id);
+    }
+
+    @GetMapping("/documents/storage")
+    public StorageResponseDTO consultarArmazenamento() {
+
+        return documentService.consultarArmazenamento();
     }
 }

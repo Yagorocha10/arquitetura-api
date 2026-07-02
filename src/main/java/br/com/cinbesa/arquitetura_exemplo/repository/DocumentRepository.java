@@ -12,6 +12,12 @@ public interface DocumentRepository extends JpaRepository<StoredDocument, Long> 
 
     void deleteByFolderId(Long folderId);
 
-    @Query("select coalesce(sum(document.tamanho), 0) from StoredDocument document")
-    long sumTotalSizeBytes();
+    @Query("""
+            SELECT COALESCE(SUM(d.tamanho), 0) FROM StoredDocument d
+            """)
+    Long calcularEspacoUtilizado();
+
+    @Query("""
+            SELECT COUNT(d) FROM StoredDocument d """)
+    Long quantidadeArquivos();
 }

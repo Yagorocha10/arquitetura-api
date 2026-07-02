@@ -37,6 +37,7 @@ public class FolderController {
         return folderService.criarSubpasta(id, folderRequestDTO);
     }
 
+
     @GetMapping
     public List<FolderResponseDTO> listar(@RequestParam(required = false) Long parentId) {
         return folderService.listar(parentId);
@@ -59,4 +60,6 @@ public class FolderController {
     public void excluir(@PathVariable Long id) {
         folderService.excluir(id);
     }
+
+
 }
