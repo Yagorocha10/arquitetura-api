@@ -57,6 +57,7 @@ public class FolderService {
     public FolderResponseDTO atualizar(Long id, FolderRequestDTO folderRequestDTO) {
         Folder folder = buscarEntidade(id);
         folder.setNome(folderRequestDTO.nome());
+        folder.setParent(resolveParent(id, folderRequestDTO.parentId()));
 
         return toResponse(folder);
     }
@@ -80,6 +81,38 @@ public class FolderService {
     private Folder buscarEntidade(Long id) {
         return folderRepository.findById(id)
                 .orElseThrow(() -> new FolderNotFoundException(id));
+    }
+
+    private Folder resolveParent(Long folderId, Long parentId) {
+        if (parentId == null) {
+            return null;
+        }
+
+        if (folderId.equals(parentId)) {
+            throw new IllegalArgumentException("Uma pasta nao pode ser movida para dentro dela mesma");
+        }
+
+        Folder parent = buscarEntidade(parentId);
+
+        if (isDescendant(parent, folderId)) {
+            throw new IllegalArgumentException("Uma pasta nao pode ser movida para dentro de uma subpasta dela");
+        }
+
+        return parent;
+    }
+
+    private boolean isDescendant(Folder candidate, Long ancestorId) {
+        Folder parent = candidate.getParent();
+
+        while (parent != null) {
+            if (ancestorId.equals(parent.getId())) {
+                return true;
+            }
+
+            parent = parent.getParent();
+        }
+
+        return false;
     }
 
     private void excluirRecursivamente(Folder folder) {
