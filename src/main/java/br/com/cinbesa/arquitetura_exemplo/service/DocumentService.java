@@ -30,6 +30,7 @@ public class DocumentService {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
 
+
         StoredDocument document = StoredDocument.builder()
                 .nome(file.getOriginalFilename() == null ? "arquivo" : file.getOriginalFilename())
                 .tipo(resolveType(file.getOriginalFilename()))
