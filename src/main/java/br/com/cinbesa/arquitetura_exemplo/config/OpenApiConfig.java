@@ -12,7 +12,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API de Gestão de Arquivos (Cinbesa)") // <-- O TÍTULO QUE VOCÊ QUER
+                        .title("API de Gestão de Arquivos (Cinbesa)")
                         .version("1.0.0")
                         .description("Esta API gerencia a estrutura de pastas e documentos do projeto exemplo."));
     }

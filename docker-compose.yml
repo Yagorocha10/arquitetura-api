@@ -1,0 +1,19 @@
+services:
+
+  backend:
+    build: .
+    container_name: file-manager-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # frontend:
+  #   build:
+  #     context: ../nome-da-pasta-do-frontend
+  #   container_name: file-manager-web
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - backend

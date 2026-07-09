@@ -407,9 +407,6 @@ public class DocumentServiceTest {
 
         assertNotNull(response);
         assertEquals(10485760L, response.totalBytes());
-        // ATENÇÃO: essa asserção depende do Locale padrão da JVM (formatarEspaco usa
-        // String.format sem Locale explícito). Em uma máquina/CI com Locale en_US, o
-        // separador decimal vira "." e esse assert falha mesmo com o código correto.
         assertEquals("10,00 MB", response.espacoUtilizado());
         assertEquals(3L, response.quantidadeArquivos());
 
