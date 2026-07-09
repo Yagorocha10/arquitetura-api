@@ -9,11 +9,12 @@ services:
       - ./data:/app/data
     restart: unless-stopped
 
-  # frontend:
-  #   build:
-  #     context: ../nome-da-pasta-do-frontend
-  #   container_name: file-manager-web
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ../helpdesk-front
+    container_name: file-manager-web
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
